@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Platsens sensorer",
+        "description": "Koppla dina energisensorer for att aktivera smart EV-laddningsoptimering.",
+        "data": {
+          "grid_sensor": "Sensor for nateffekt (W)",
+          "solar_sensor": "Sensor for solproduktion (W)",
+          "battery_power_sensor": "Sensor for batterieffekt (W, negativt = laddning)",
+          "battery_soc_sensor": "Sensor for batteriladdningsniva (%)",
+          "nordpool_sensor": "Nordpool-prissensor",
+          "grid_rewards_entity": "Grid Rewards-entitet (valfri)"
+        }
+      },
+      "economics": {
+        "title": "Ekonomi",
+        "description": "Konfigurera natavgifter och ersattningsniver.",
+        "data": {
+          "grid_fee_import": "Natavgift import (SEK/kWh)",
+          "grid_fee_export": "Natavgift export (SEK/kWh)",
+          "export_compensation": "Exportersattning (SEK/kWh)",
+          "vat_rate": "Momssats (0.25 = 25%)"
+        }
+      },
+      "power": {
+        "title": "Effektbegransningar",
+        "description": "Stall in maximal effektgrans for EV-laddning.",
+        "data": {
+          "power_limit_kw": "Maximal effektgrans (kW)"
+        }
+      },
+      "vehicle": {
+        "title": "Fordonskonfiguration",
+        "description": "Lagg till ditt forsta elfordon. Du kan lagga till fler fordon senare via integrationsinstallningar.",
+        "data": {
+          "name": "Fordonsnamn",
+          "priority": "Laddningsprioritet (1 = hogst)",
+          "charger_entity": "Laddarstatusentitet",
+          "soc_entity": "Laddningsniva-entitet (valfri)",
+          "target_soc": "Onskad laddningsniva (%)",
+          "departure_entity": "Avgangstid-entitet (valfri)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Smart EV Optimizer ar redan konfigurerad."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Lagg till fordon",
+        "description": "Lagg till ytterligare ett elfordon till optimeraren.",
+        "data": {
+          "name": "Fordonsnamn",
+          "priority": "Laddningsprioritet (1 = hogst)",
+          "charger_entity": "Laddarstatusentitet",
+          "soc_entity": "Laddningsniva-entitet (valfri)",
+          "target_soc": "Onskad laddningsniva (%)",
+          "departure_entity": "Avgangstid-entitet (valfri)"
+        }
+      }
+    }
+  }
+}
