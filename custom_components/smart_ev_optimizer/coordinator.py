@@ -206,7 +206,13 @@ class SmartEVOptimizerCoordinator(DataUpdateCoordinator[SmartEVOptimizerData]):
         self._obc_tracker = OBCCooldownTracker()
         self._calendar_hour_tracker = CalendarHourTracker()
         self._force_charge_vehicles: set[str] = set()
+        self._pause_all: bool = False
+        self._connected_vehicle: str | None = None
         self._last_commands: dict[str, dict] = {}
+
+        vehicles_cfg = config.get("vehicles", [])
+        self._vehicle_names: list[str] = [v.get("name", "") for v in vehicles_cfg]
+
         self.data = build_initial_data(power_limit_kw=config.get("power_limit_kw", 11.0))
 
     async def _async_update_data(self) -> SmartEVOptimizerData:
