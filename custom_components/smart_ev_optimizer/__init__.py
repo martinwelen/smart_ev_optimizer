@@ -11,7 +11,7 @@ from .const import DOMAIN, PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 
-type SmartEVOptimizerConfigEntry = ConfigEntry
+SmartEVOptimizerConfigEntry = ConfigEntry
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SmartEVOptimizerConfigEntry) -> bool:
