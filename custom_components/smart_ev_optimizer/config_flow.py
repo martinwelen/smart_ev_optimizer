@@ -83,7 +83,7 @@ STEP_ECONOMICS_SCHEMA = vol.Schema(
             NumberSelectorConfig(
                 min=0,
                 max=10,
-                step=0.01,
+                step=0.00001,
                 unit_of_measurement="SEK/kWh",
                 mode=NumberSelectorMode.BOX,
             ),
@@ -92,7 +92,7 @@ STEP_ECONOMICS_SCHEMA = vol.Schema(
             NumberSelectorConfig(
                 min=0,
                 max=10,
-                step=0.01,
+                step=0.00001,
                 unit_of_measurement="SEK/kWh",
                 mode=NumberSelectorMode.BOX,
             ),
@@ -101,7 +101,7 @@ STEP_ECONOMICS_SCHEMA = vol.Schema(
             NumberSelectorConfig(
                 min=0,
                 max=10,
-                step=0.01,
+                step=0.00001,
                 unit_of_measurement="SEK/kWh",
                 mode=NumberSelectorMode.BOX,
             ),
@@ -110,7 +110,7 @@ STEP_ECONOMICS_SCHEMA = vol.Schema(
             NumberSelectorConfig(
                 min=0,
                 max=1,
-                step=0.01,
+                step=0.00001,
                 mode=NumberSelectorMode.BOX,
             ),
         ),
@@ -348,7 +348,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                     NumberSelectorConfig(
                         min=0,
                         max=10,
-                        step=0.01,
+                        step=0.00001,
                         unit_of_measurement="SEK/kWh",
                         mode=NumberSelectorMode.BOX,
                     ),
@@ -360,7 +360,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                     NumberSelectorConfig(
                         min=0,
                         max=10,
-                        step=0.01,
+                        step=0.00001,
                         unit_of_measurement="SEK/kWh",
                         mode=NumberSelectorMode.BOX,
                     ),
@@ -372,7 +372,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                     NumberSelectorConfig(
                         min=0,
                         max=10,
-                        step=0.01,
+                        step=0.00001,
                         unit_of_measurement="SEK/kWh",
                         mode=NumberSelectorMode.BOX,
                     ),
@@ -384,7 +384,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                     NumberSelectorConfig(
                         min=0,
                         max=1,
-                        step=0.01,
+                        step=0.00001,
                         mode=NumberSelectorMode.BOX,
                     ),
                 ),

@@ -15,11 +15,11 @@
       },
       "economics": {
         "title": "Economics",
-        "description": "Configure grid fees and compensation rates. Use decimals for precision (e.g. 0.82).",
+        "description": "Configure grid fees and compensation rates. High precision supported (up to 5 decimals, e.g. 0.42531).",
         "data": {
-          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.82)",
-          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05)",
-          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.10)",
+          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.42531)",
+          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05012)",
+          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.09880)",
           "vat_rate": "VAT rate (0.25 = 25%)"
         }
       },
@@ -59,11 +59,11 @@
       },
       "general_settings": {
         "title": "General Settings",
-        "description": "Configure grid fees, compensation rates, and power limits. Use decimals for precision (e.g. 0.82).",
+        "description": "Configure grid fees, compensation rates, and power limits. High precision supported (up to 5 decimals, e.g. 0.42531).",
         "data": {
-          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.82)",
-          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05)",
-          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.10)",
+          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.42531)",
+          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05012)",
+          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.09880)",
           "vat_rate": "VAT rate (0.25 = 25%)",
           "power_limit_kw": "Peak power limit (kW)",
           "fuse_size": "Fuse size per phase (A)"
