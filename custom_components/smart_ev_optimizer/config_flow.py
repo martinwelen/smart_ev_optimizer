@@ -291,7 +291,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialise with existing config entry."""
         super().__init__()
-        self.config_entry = config_entry
+        self._config_entry = config_entry
         self._selected_vehicle_name: str | None = None
 
     # ----- Menu -----
@@ -333,7 +333,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                 data_schema=STEP_VEHICLE_SCHEMA,
             )
 
-        existing_data = dict(self.config_entry.data)
+        existing_data = dict(self._config_entry.data)
         vehicles = list(existing_data.get(CONF_VEHICLES, []))
         vehicles.append(user_input)
         existing_data[CONF_VEHICLES] = vehicles
@@ -343,11 +343,11 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
 
     async def async_step_edit_vehicle(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Select which vehicle to edit."""
-        vehicles = list(self.config_entry.data.get(CONF_VEHICLES, []))
+        vehicles = list(self._config_entry.data.get(CONF_VEHICLES, []))
         names = [v.get(CONF_VEHICLE_NAME, f"Vehicle {i + 1}") for i, v in enumerate(vehicles)]
 
         if not names:
-            return self.async_create_entry(title="", data=dict(self.config_entry.data))
+            return self.async_create_entry(title="", data=dict(self._config_entry.data))
 
         if user_input is not None:
             self._selected_vehicle_name = user_input.get("vehicle")
@@ -369,7 +369,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Show pre-filled form for the selected vehicle."""
-        existing_data = dict(self.config_entry.data)
+        existing_data = dict(self._config_entry.data)
         vehicles = list(existing_data.get(CONF_VEHICLES, []))
 
         idx = None
@@ -438,7 +438,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Select and remove a vehicle."""
-        existing_data = dict(self.config_entry.data)
+        existing_data = dict(self._config_entry.data)
         vehicles = list(existing_data.get(CONF_VEHICLES, []))
         names = [v.get(CONF_VEHICLE_NAME, f"Vehicle {i + 1}") for i, v in enumerate(vehicles)]
 

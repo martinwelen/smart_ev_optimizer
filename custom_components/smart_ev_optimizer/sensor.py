@@ -94,7 +94,7 @@ class SEOOpportunityCostSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_opportunity_cost"
         self._attr_name = "SEO Opportunity Cost"
         self._attr_device_class = SensorDeviceClass.MONETARY
-        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_state_class = None
         self._attr_native_unit_of_measurement = "SEK/kWh"
         self._attr_icon = "mdi:currency-usd"
 
