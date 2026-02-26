@@ -1,4 +1,5 @@
 """Sensor platform for Smart EV Optimizer."""
+
 from __future__ import annotations
 
 from homeassistant.components.sensor import (
@@ -100,7 +101,7 @@ class SEOOpportunityCostSensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         data = self.coordinator.data
-        return data.opportunity_export_revenue - data.opportunity_night_cost
+        return data.opportunity_night_cost - data.opportunity_export_revenue
 
 
 class SEOVehicleAllocatedAmpsSensor(CoordinatorEntity, SensorEntity):
@@ -139,9 +140,7 @@ class SEOVehicleAllocatedPhasesSensor(CoordinatorEntity, SensorEntity):
     ) -> None:
         super().__init__(coordinator)
         self._vehicle_id = vehicle_id
-        self._attr_unique_id = (
-            f"{coordinator.config_entry.entry_id}_{vehicle_id}_allocated_phases"
-        )
+        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{vehicle_id}_allocated_phases"
         self._attr_name = f"SEO {vehicle_name} Allocated Phases"
         self._attr_icon = "mdi:sine-wave"
 

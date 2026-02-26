@@ -107,9 +107,7 @@ def test_assemble_config_data():
     """Test the helper that assembles final config from all steps."""
     from custom_components.smart_ev_optimizer.config_flow import assemble_config_data
 
-    result = assemble_config_data(
-        SITE_DATA, ECONOMICS_DATA, POWER_DATA, [VEHICLE_DATA]
-    )
+    result = assemble_config_data(SITE_DATA, ECONOMICS_DATA, POWER_DATA, [VEHICLE_DATA])
 
     # Site sensors
     assert result[CONF_GRID_SENSOR] == "sensor.grid_power"
@@ -334,3 +332,136 @@ async def test_step_vehicle_creates_entry():
     call_kwargs = flow.async_create_entry.call_args[1]
     assert CONF_VEHICLES in call_kwargs["data"]
     assert len(call_kwargs["data"][CONF_VEHICLES]) == 1
+
+
+# ---------------------------------------------------------------------------
+# Options flow — menu, add, edit, remove
+# ---------------------------------------------------------------------------
+
+
+def _make_config_entry_with_vehicles(vehicles):
+    """Create a mock config entry with vehicles."""
+    entry = MagicMock()
+    entry.data = {
+        CONF_VEHICLES: list(vehicles),
+    }
+    return entry
+
+
+@pytest.mark.asyncio
+async def test_options_flow_init_shows_menu():
+    """Options init step should show an action menu, not the vehicle form."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([VEHICLE_DATA])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+    result = await flow.async_step_init(user_input=None)
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+
+
+@pytest.mark.asyncio
+async def test_options_flow_add_vehicle():
+    """Add vehicle action should append a new vehicle."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([VEHICLE_DATA])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    # Navigate to add
+    result = await flow.async_step_init(user_input={"action": "add_vehicle"})
+    assert result["type"] == "form"
+    assert result["step_id"] == "add_vehicle"
+
+    # Submit new vehicle
+    new_vehicle = {
+        CONF_VEHICLE_NAME: "Work Van",
+        CONF_VEHICLE_PRIORITY: 2,
+        CONF_VEHICLE_CHARGER_ENTITY: "sensor.charger_2",
+        CONF_VEHICLE_TARGET_SOC: 90,
+    }
+    result = await flow.async_step_add_vehicle(user_input=new_vehicle)
+    assert result["type"] == "create_entry"
+    assert len(result["data"][CONF_VEHICLES]) == 2
+    assert result["data"][CONF_VEHICLES][1][CONF_VEHICLE_NAME] == "Work Van"
+
+
+@pytest.mark.asyncio
+async def test_options_flow_edit_vehicle():
+    """Edit vehicle action should allow selecting and modifying a vehicle."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([VEHICLE_DATA])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    # Navigate to edit
+    result = await flow.async_step_init(user_input={"action": "edit_vehicle"})
+    assert result["type"] == "form"
+    assert result["step_id"] == "edit_vehicle"
+
+    # Select the vehicle
+    result = await flow.async_step_edit_vehicle(user_input={"vehicle": "Family Car"})
+    assert result["type"] == "form"
+    assert result["step_id"] == "edit_vehicle_detail"
+
+    # Submit edited data
+    edited = dict(VEHICLE_DATA)
+    edited[CONF_VEHICLE_NAME] = "Family Car Renamed"
+    result = await flow.async_step_edit_vehicle_detail(user_input=edited)
+    assert result["type"] == "create_entry"
+    assert result["data"][CONF_VEHICLES][0][CONF_VEHICLE_NAME] == "Family Car Renamed"
+
+
+@pytest.mark.asyncio
+async def test_options_flow_remove_vehicle():
+    """Remove vehicle action should delete the selected vehicle."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([VEHICLE_DATA])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    # Navigate to remove
+    result = await flow.async_step_init(user_input={"action": "remove_vehicle"})
+    assert result["type"] == "form"
+    assert result["step_id"] == "remove_vehicle"
+
+    # Remove the vehicle
+    result = await flow.async_step_remove_vehicle(user_input={"vehicle": "Family Car"})
+    assert result["type"] == "create_entry"
+    assert len(result["data"][CONF_VEHICLES]) == 0
+
+
+@pytest.mark.asyncio
+async def test_options_flow_edit_empty_vehicles():
+    """Edit with no vehicles should just create entry immediately."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    result = await flow.async_step_edit_vehicle(user_input=None)
+    assert result["type"] == "create_entry"
+
+
+@pytest.mark.asyncio
+async def test_options_flow_remove_empty_vehicles():
+    """Remove with no vehicles should just create entry immediately."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_with_vehicles([])
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    result = await flow.async_step_remove_vehicle(user_input=None)
+    assert result["type"] == "create_entry"

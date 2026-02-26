@@ -1,4 +1,5 @@
 """Shared test fixtures for Smart EV Optimizer."""
+
 import datetime
 import sys
 from types import ModuleType
@@ -117,6 +118,11 @@ if "homeassistant" not in sys.modules:
     )
     ha_selector.TextSelector = _SelectorStub  # type: ignore[attr-defined]
     ha_selector.TextSelectorConfig = _SelectorConfigStub  # type: ignore[attr-defined]
+    ha_selector.SelectSelector = _SelectorStub  # type: ignore[attr-defined]
+    ha_selector.SelectSelectorConfig = _SelectorConfigStub  # type: ignore[attr-defined]
+    ha_selector.SelectSelectorMode = type(  # type: ignore[attr-defined]
+        "SelectSelectorMode", (), {"LIST": "list", "DROPDOWN": "dropdown"}
+    )
     ha_selector.selector = _SelectorStub  # type: ignore[attr-defined]
 
     # FlowResult type alias (just a dict)

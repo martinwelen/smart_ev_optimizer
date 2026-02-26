@@ -1,4 +1,5 @@
 """Tests for sensor platform."""
+
 from unittest.mock import MagicMock
 
 from custom_components.smart_ev_optimizer.const import SOC_SOURCE_API
@@ -76,18 +77,21 @@ def test_available_capacity_sensor():
 def test_opportunity_cost_sensor():
     coord = _make_coordinator_mock()
     sensor = SEOOpportunityCostSensor(coord)
-    # Export revenue (1.05) - night cost (1.125) = -0.075
-    assert abs(sensor.native_value - (-0.075)) < 0.001
+    # Night cost (1.125) - export revenue (1.05) = 0.075
+    # Positive = savings from charging now
+    assert abs(sensor.native_value - 0.075) < 0.001
 
 
-def test_opportunity_cost_sensor_positive():
+def test_opportunity_cost_sensor_negative():
     data = SmartEVOptimizerData(
         opportunity_export_revenue=2.0,
         opportunity_night_cost=1.0,
     )
     coord = _make_coordinator_mock(data)
     sensor = SEOOpportunityCostSensor(coord)
-    assert abs(sensor.native_value - 1.0) < 0.001
+    # Night cost (1.0) - export revenue (2.0) = -1.0
+    # Negative = exporting is more profitable
+    assert abs(sensor.native_value - (-1.0)) < 0.001
 
 
 def test_vehicle_allocated_amps_sensor():
