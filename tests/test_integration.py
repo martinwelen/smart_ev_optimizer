@@ -81,6 +81,7 @@ def _make_context(
         export_compensation=0.10,
         vat_rate=0.25,
         power_limit_kw=power_limit_kw,
+        fuse_size=20,
         vehicles=vehicles,
         obc_tracker=OBCCooldownTracker(),
         calendar_hour_tracker=tracker,
@@ -141,9 +142,11 @@ class TestFullPipeline:
         """Two vehicles: higher priority gets power first."""
         v1 = _make_vehicle("car_1", priority=1, current_soc=50)
         v2 = _make_vehicle("car_2", priority=2, current_soc=50)
+        # 11kW limit - 5kW grid = 6kW available → 6000/(230*3) = 8.69A → 8A for car_1
+        # remaining after car_1: 6.0 - (8*230*3)/1000 = 0.48kW → below 6A min for car_2
         ctx = _make_context(
             [v2, v1],
-            grid_power_w=8000,
+            grid_power_w=5000,
             power_limit_kw=11.0,
             current_export_price=0.10,
             night_price=0.80,

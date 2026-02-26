@@ -15,19 +15,20 @@
       },
       "economics": {
         "title": "Economics",
-        "description": "Configure grid fees and compensation rates.",
+        "description": "Configure grid fees and compensation rates. Use decimals for precision (e.g. 0.82).",
         "data": {
-          "grid_fee_import": "Grid import fee (SEK/kWh)",
-          "grid_fee_export": "Grid export fee (SEK/kWh)",
-          "export_compensation": "Export compensation (SEK/kWh)",
+          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.82)",
+          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05)",
+          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.10)",
           "vat_rate": "VAT rate (0.25 = 25%)"
         }
       },
       "power": {
         "title": "Power Limits",
-        "description": "Set the peak power limit for EV charging.",
+        "description": "Set the peak power limit and fuse size for EV charging.",
         "data": {
-          "power_limit_kw": "Peak power limit (kW)"
+          "power_limit_kw": "Peak power limit (kW)",
+          "fuse_size": "Fuse size per phase (A)"
         }
       },
       "vehicle": {

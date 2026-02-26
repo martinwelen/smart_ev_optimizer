@@ -14,6 +14,7 @@ from .const import (
     CONF_BATTERY_POWER_SENSOR,
     CONF_BATTERY_SOC_SENSOR,
     CONF_EXPORT_COMPENSATION,
+    CONF_FUSE_SIZE,
     CONF_GRID_FEE_EXPORT,
     CONF_GRID_FEE_IMPORT,
     CONF_GRID_REWARDS_ENTITY,
@@ -28,6 +29,7 @@ from .const import (
     CONF_VEHICLE_SOC_ENTITY,
     CONF_VEHICLE_TARGET_SOC,
     CONF_VEHICLES,
+    DEFAULT_FUSE_SIZE,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_TARGET_SOC,
     DEFAULT_VAT_RATE,
@@ -96,6 +98,7 @@ class PipelineContext:
     export_compensation: float
     vat_rate: float
     power_limit_kw: float
+    fuse_size: int
     vehicles: list[VehicleState]
     obc_tracker: OBCCooldownTracker
     calendar_hour_tracker: CalendarHourTracker
@@ -143,7 +146,9 @@ def run_decision_pipeline(ctx: PipelineContext) -> SmartEVOptimizerData:
 
     if force_vehicles:
         force_alloc = allocate_power_to_vehicles(
-            vehicles=force_vehicles, available_capacity_kw=available_kw
+            vehicles=force_vehicles,
+            available_capacity_kw=available_kw,
+            fuse_size=ctx.fuse_size,
         )
         for alloc in force_alloc:
             for v in ctx.vehicles:
@@ -167,7 +172,9 @@ def run_decision_pipeline(ctx: PipelineContext) -> SmartEVOptimizerData:
     if opp_result.should_charge_now and normal_vehicles:
         remaining_kw = max(0.0, available_kw)
         normal_alloc = allocate_power_to_vehicles(
-            vehicles=normal_vehicles, available_capacity_kw=remaining_kw
+            vehicles=normal_vehicles,
+            available_capacity_kw=remaining_kw,
+            fuse_size=ctx.fuse_size,
         )
         for alloc in normal_alloc:
             for v in ctx.vehicles:
@@ -340,6 +347,7 @@ class SmartEVOptimizerCoordinator(DataUpdateCoordinator[SmartEVOptimizerData]):
         export_compensation = float(cfg.get(CONF_EXPORT_COMPENSATION, 0.0))
         vat_rate = float(cfg.get(CONF_VAT_RATE, DEFAULT_VAT_RATE))
         power_limit_kw = float(cfg.get("power_limit_kw", 11.0))
+        fuse_size = int(cfg.get(CONF_FUSE_SIZE, DEFAULT_FUSE_SIZE))
 
         # Build vehicle states
         vehicles: list[VehicleState] = []
@@ -391,6 +399,7 @@ class SmartEVOptimizerCoordinator(DataUpdateCoordinator[SmartEVOptimizerData]):
             export_compensation=export_compensation,
             vat_rate=vat_rate,
             power_limit_kw=power_limit_kw,
+            fuse_size=fuse_size,
             vehicles=vehicles,
             obc_tracker=self._obc_tracker,
             calendar_hour_tracker=self._calendar_hour_tracker,
