@@ -51,10 +51,22 @@
   "options": {
     "step": {
       "init": {
-        "title": "Manage Vehicles",
-        "description": "Add, edit, or remove vehicles from the optimiser.",
+        "title": "Smart EV Optimizer",
+        "description": "Configure general settings or manage vehicles.",
         "data": {
           "action": "Choose an action"
+        }
+      },
+      "general_settings": {
+        "title": "General Settings",
+        "description": "Configure grid fees, compensation rates, and power limits. Use decimals for precision (e.g. 0.82).",
+        "data": {
+          "grid_fee_import": "Grid import fee (SEK/kWh, e.g. 0.82)",
+          "grid_fee_export": "Grid export fee (SEK/kWh, e.g. 0.05)",
+          "export_compensation": "Export compensation (SEK/kWh, e.g. 0.10)",
+          "vat_rate": "VAT rate (0.25 = 25%)",
+          "power_limit_kw": "Peak power limit (kW)",
+          "fuse_size": "Fuse size per phase (A)"
         }
       },
       "add_vehicle": {

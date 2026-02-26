@@ -10,6 +10,7 @@ from custom_components.smart_ev_optimizer.const import (
     CONF_BATTERY_POWER_SENSOR,
     CONF_BATTERY_SOC_SENSOR,
     CONF_EXPORT_COMPENSATION,
+    CONF_FUSE_SIZE,
     CONF_GRID_FEE_EXPORT,
     CONF_GRID_FEE_IMPORT,
     CONF_GRID_REWARDS_ENTITY,
@@ -465,3 +466,61 @@ async def test_options_flow_remove_empty_vehicles():
 
     result = await flow.async_step_remove_vehicle(user_input=None)
     assert result["type"] == "create_entry"
+
+
+def _make_config_entry_full():
+    """Create a mock config entry with economics and power data."""
+    entry = MagicMock()
+    entry.data = {
+        CONF_GRID_FEE_IMPORT: 0.40,
+        CONF_GRID_FEE_EXPORT: 0.05,
+        CONF_EXPORT_COMPENSATION: 0.10,
+        CONF_VAT_RATE: 0.25,
+        CONF_POWER_LIMIT_KW: 11.0,
+        CONF_FUSE_SIZE: 20,
+        CONF_VEHICLES: [VEHICLE_DATA],
+    }
+    return entry
+
+
+@pytest.mark.asyncio
+async def test_options_flow_general_settings_shows_form():
+    """General settings action should show pre-filled economics/power form."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_full()
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    result = await flow.async_step_init(user_input={"action": "general_settings"})
+    assert result["type"] == "form"
+    assert result["step_id"] == "general_settings"
+
+
+@pytest.mark.asyncio
+async def test_options_flow_general_settings_saves():
+    """Submitting general settings should update config data."""
+    from custom_components.smart_ev_optimizer.config_flow import (
+        SmartEVOptimizerOptionsFlow,
+    )
+
+    entry = _make_config_entry_full()
+    flow = SmartEVOptimizerOptionsFlow(entry)
+
+    result = await flow.async_step_general_settings(
+        user_input={
+            CONF_GRID_FEE_IMPORT: 0.82,
+            CONF_GRID_FEE_EXPORT: 0.03,
+            CONF_EXPORT_COMPENSATION: 0.15,
+            CONF_VAT_RATE: 0.25,
+            CONF_POWER_LIMIT_KW: 16.0,
+            CONF_FUSE_SIZE: 25,
+        }
+    )
+    assert result["type"] == "create_entry"
+    assert result["data"][CONF_GRID_FEE_IMPORT] == 0.82
+    assert result["data"][CONF_POWER_LIMIT_KW] == 16.0
+    assert result["data"][CONF_FUSE_SIZE] == 25
+    # Vehicles should be preserved
+    assert len(result["data"][CONF_VEHICLES]) == 1

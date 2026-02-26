@@ -51,10 +51,22 @@
   "options": {
     "step": {
       "init": {
-        "title": "Hantera fordon",
-        "description": "Lagg till, redigera eller ta bort fordon fran optimeraren.",
+        "title": "Smart EV Optimizer",
+        "description": "Konfigurera allmannainstallningar eller hantera fordon.",
         "data": {
           "action": "Valj en atgard"
+        }
+      },
+      "general_settings": {
+        "title": "Allmanna installningar",
+        "description": "Konfigurera natavgifter, ersattningsniver och effektbegransningar. Anvand decimaler for precision (t.ex. 0.82).",
+        "data": {
+          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.82)",
+          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05)",
+          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.10)",
+          "vat_rate": "Momssats (0.25 = 25%)",
+          "power_limit_kw": "Maximal effektgrans (kW)",
+          "fuse_size": "Sakringsstorlek per fas (A)"
         }
       },
       "add_vehicle": {

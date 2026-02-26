@@ -284,6 +284,7 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
 class SmartEVOptimizerOptionsFlow(OptionsFlow):
     """Handle options flow — manage vehicles after initial setup."""
 
+    MENU_GENERAL = "general_settings"
     MENU_ADD = "add_vehicle"
     MENU_EDIT = "edit_vehicle"
     MENU_REMOVE = "remove_vehicle"
@@ -300,6 +301,8 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
         """Show menu: add, edit, or remove vehicle."""
         if user_input is not None:
             action = user_input.get("action")
+            if action == self.MENU_GENERAL:
+                return await self.async_step_general_settings()
             if action == self.MENU_ADD:
                 return await self.async_step_add_vehicle()
             if action == self.MENU_EDIT:
@@ -312,6 +315,7 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
                 vol.Required("action"): SelectSelector(
                     SelectSelectorConfig(
                         options=[
+                            {"value": self.MENU_GENERAL, "label": "General settings"},
                             {"value": self.MENU_ADD, "label": "Add vehicle"},
                             {"value": self.MENU_EDIT, "label": "Edit vehicle"},
                             {"value": self.MENU_REMOVE, "label": "Remove vehicle"},
@@ -322,6 +326,98 @@ class SmartEVOptimizerOptionsFlow(OptionsFlow):
             }
         )
         return self.async_show_form(step_id="init", data_schema=menu_schema)
+
+    # ----- General Settings -----
+
+    async def async_step_general_settings(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Edit economics and power limit settings."""
+        existing_data = dict(self._config_entry.data)
+
+        if user_input is not None:
+            existing_data.update(user_input)
+            return self.async_create_entry(title="", data=existing_data)
+
+        general_schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_GRID_FEE_IMPORT,
+                    default=float(existing_data.get(CONF_GRID_FEE_IMPORT, 0.0)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=10,
+                        step=0.01,
+                        unit_of_measurement="SEK/kWh",
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+                vol.Required(
+                    CONF_GRID_FEE_EXPORT,
+                    default=float(existing_data.get(CONF_GRID_FEE_EXPORT, 0.0)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=10,
+                        step=0.01,
+                        unit_of_measurement="SEK/kWh",
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+                vol.Required(
+                    CONF_EXPORT_COMPENSATION,
+                    default=float(existing_data.get(CONF_EXPORT_COMPENSATION, 0.0)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=10,
+                        step=0.01,
+                        unit_of_measurement="SEK/kWh",
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+                vol.Optional(
+                    CONF_VAT_RATE,
+                    default=float(existing_data.get(CONF_VAT_RATE, DEFAULT_VAT_RATE)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=0,
+                        max=1,
+                        step=0.01,
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+                vol.Optional(
+                    CONF_POWER_LIMIT_KW,
+                    default=float(existing_data.get(CONF_POWER_LIMIT_KW, DEFAULT_POWER_LIMIT_KW)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=1,
+                        max=50,
+                        step=0.5,
+                        unit_of_measurement="kW",
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+                vol.Optional(
+                    CONF_FUSE_SIZE,
+                    default=int(existing_data.get(CONF_FUSE_SIZE, DEFAULT_FUSE_SIZE)),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=10,
+                        max=63,
+                        step=1,
+                        unit_of_measurement="A",
+                        mode=NumberSelectorMode.BOX,
+                    ),
+                ),
+            }
+        )
+        return self.async_show_form(
+            step_id="general_settings",
+            data_schema=general_schema,
+        )
 
     # ----- Add -----
 
