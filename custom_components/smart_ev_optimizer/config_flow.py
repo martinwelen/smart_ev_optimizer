@@ -66,7 +66,7 @@ STEP_SITE_SCHEMA = vol.Schema(
         vol.Required(CONF_NORDPOOL_SENSOR): EntitySelector(
             EntitySelectorConfig(domain="sensor"),
         ),
-        vol.Optional(CONF_GRID_REWARDS_ENTITY, default=""): EntitySelector(
+        vol.Optional(CONF_GRID_REWARDS_ENTITY): EntitySelector(
             EntitySelectorConfig(domain=["sensor", "binary_sensor"]),
         ),
     }
@@ -144,7 +144,7 @@ STEP_VEHICLE_SCHEMA = vol.Schema(
         vol.Required(CONF_VEHICLE_CHARGER_ENTITY): EntitySelector(
             EntitySelectorConfig(domain="sensor"),
         ),
-        vol.Optional(CONF_VEHICLE_SOC_ENTITY, default=""): EntitySelector(
+        vol.Optional(CONF_VEHICLE_SOC_ENTITY): EntitySelector(
             EntitySelectorConfig(domain="sensor"),
         ),
         vol.Optional(
@@ -158,7 +158,7 @@ STEP_VEHICLE_SCHEMA = vol.Schema(
                 mode=NumberSelectorMode.SLIDER,
             ),
         ),
-        vol.Optional(CONF_VEHICLE_DEPARTURE_ENTITY, default=""): EntitySelector(
+        vol.Optional(CONF_VEHICLE_DEPARTURE_ENTITY): EntitySelector(
             EntitySelectorConfig(domain=["sensor", "input_datetime"]),
         ),
     }

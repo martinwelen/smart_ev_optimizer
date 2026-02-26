@@ -40,7 +40,6 @@ SITE_DATA = {
     CONF_BATTERY_POWER_SENSOR: "sensor.battery_power",
     CONF_BATTERY_SOC_SENSOR: "sensor.battery_soc",
     CONF_NORDPOOL_SENSOR: "sensor.nordpool",
-    CONF_GRID_REWARDS_ENTITY: "",
 }
 
 ECONOMICS_DATA = {
@@ -60,7 +59,6 @@ VEHICLE_DATA = {
     CONF_VEHICLE_CHARGER_ENTITY: "sensor.easee_status",
     CONF_VEHICLE_SOC_ENTITY: "sensor.car_soc",
     CONF_VEHICLE_TARGET_SOC: 80,
-    CONF_VEHICLE_DEPARTURE_ENTITY: "",
 }
 
 
@@ -119,7 +117,7 @@ def test_assemble_config_data():
     assert result[CONF_BATTERY_POWER_SENSOR] == "sensor.battery_power"
     assert result[CONF_BATTERY_SOC_SENSOR] == "sensor.battery_soc"
     assert result[CONF_NORDPOOL_SENSOR] == "sensor.nordpool"
-    assert result[CONF_GRID_REWARDS_ENTITY] == ""
+    assert CONF_GRID_REWARDS_ENTITY not in result
 
     # Economics
     assert result[CONF_GRID_FEE_IMPORT] == 0.40
