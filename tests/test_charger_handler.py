@@ -1,4 +1,5 @@
 """Tests for charger action handler."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
