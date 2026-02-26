@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Site Sensors",
+        "description": "Map your energy sensors to enable smart EV charging optimisation.",
+        "data": {
+          "grid_sensor": "Grid power sensor (W)",
+          "solar_sensor": "Solar production sensor (W)",
+          "battery_power_sensor": "Battery power sensor (W, negative = charging)",
+          "battery_soc_sensor": "Battery state of charge sensor (%)",
+          "nordpool_sensor": "Nordpool price sensor",
+          "grid_rewards_entity": "Grid Rewards entity (optional)"
+        }
+      },
+      "economics": {
+        "title": "Economics",
+        "description": "Configure grid fees and compensation rates.",
+        "data": {
+          "grid_fee_import": "Grid import fee (SEK/kWh)",
+          "grid_fee_export": "Grid export fee (SEK/kWh)",
+          "export_compensation": "Export compensation (SEK/kWh)",
+          "vat_rate": "VAT rate (0.25 = 25%)"
+        }
+      },
+      "power": {
+        "title": "Power Limits",
+        "description": "Set the peak power limit for EV charging.",
+        "data": {
+          "power_limit_kw": "Peak power limit (kW)"
+        }
+      },
+      "vehicle": {
+        "title": "Vehicle Setup",
+        "description": "Add your first EV. You can add more vehicles later via integration options.",
+        "data": {
+          "name": "Vehicle name",
+          "priority": "Charging priority (1 = highest)",
+          "charger_entity": "Charger status entity",
+          "soc_entity": "State of charge entity (optional)",
+          "target_soc": "Target state of charge (%)",
+          "departure_entity": "Departure time entity (optional)"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Smart EV Optimizer is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Add Vehicle",
+        "description": "Add another EV to the optimiser.",
+        "data": {
+          "name": "Vehicle name",
+          "priority": "Charging priority (1 = highest)",
+          "charger_entity": "Charger status entity",
+          "soc_entity": "State of charge entity (optional)",
+          "target_soc": "Target state of charge (%)",
+          "departure_entity": "Departure time entity (optional)"
+        }
+      }
+    }
+  }
+}
