@@ -15,11 +15,11 @@
       },
       "economics": {
         "title": "Ekonomi",
-        "description": "Konfigurera natavgifter och ersattningsniver. Anvand decimaler for precision (t.ex. 0.82).",
+        "description": "Konfigurera natavgifter och ersattningsniver. Hog precision stods (upp till 5 decimaler, t.ex. 0.42531).",
         "data": {
-          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.82)",
-          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05)",
-          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.10)",
+          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.42531)",
+          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05012)",
+          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.09880)",
           "vat_rate": "Momssats (0.25 = 25%)"
         }
       },
@@ -59,11 +59,11 @@
       },
       "general_settings": {
         "title": "Allmanna installningar",
-        "description": "Konfigurera natavgifter, ersattningsniver och effektbegransningar. Anvand decimaler for precision (t.ex. 0.82).",
+        "description": "Konfigurera natavgifter, ersattningsniver och effektbegransningar. Hog precision stods (upp till 5 decimaler, t.ex. 0.42531).",
         "data": {
-          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.82)",
-          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05)",
-          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.10)",
+          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.42531)",
+          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05012)",
+          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.09880)",
           "vat_rate": "Momssats (0.25 = 25%)",
           "power_limit_kw": "Maximal effektgrans (kW)",
           "fuse_size": "Sakringsstorlek per fas (A)"
