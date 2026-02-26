@@ -16,6 +16,7 @@ CONF_GRID_REWARDS_ENTITY: Final = "grid_rewards_entity"
 
 # Config keys — power limits
 CONF_POWER_LIMIT_KW: Final = "power_limit_kw"
+CONF_FUSE_SIZE: Final = "fuse_size"
 CONF_CALENDAR_HOUR_TRACKING: Final = "calendar_hour_tracking"
 
 # Config keys — economics
@@ -35,6 +36,7 @@ CONF_VEHICLE_DEPARTURE_ENTITY: Final = "departure_entity"
 
 # Defaults
 DEFAULT_POWER_LIMIT_KW: Final = 11.0
+DEFAULT_FUSE_SIZE: Final = 20
 # Calendar hour tracking is always enabled (matches Swedish effekttaxa billing)
 DEFAULT_VAT_RATE: Final = 0.25
 DEFAULT_TARGET_SOC: Final = 80

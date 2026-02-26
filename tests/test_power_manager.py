@@ -103,18 +103,18 @@ class TestCalendarHourTracker:
 class TestPowerAllocation:
     def test_allocate_single_vehicle(self):
         vehicles = [_make_vehicle("car_1", priority=1)]
-        result = allocate_power_to_vehicles(
-            vehicles=vehicles, available_capacity_kw=7.36, voltage=230
-        )
+        result = allocate_power_to_vehicles(vehicles=vehicles, available_capacity_kw=7.36)
         assert len(result) == 1
-        assert result[0].amps > 0
+        # 7360W / (230V * 3 phases) = 10.66A → 10A
+        assert result[0].amps == 10
+        assert result[0].phases == 3
 
     def test_allocate_priority_order(self):
         v1 = _make_vehicle("car_1", priority=1)
         v2 = _make_vehicle("car_2", priority=2)
-        result = allocate_power_to_vehicles(
-            vehicles=[v2, v1], available_capacity_kw=3.68, voltage=230
-        )
+        # 5kW three-phase: 5000 / (230*3) = 7.24A → 7A for first car
+        # remaining: 5.0 - (7*230*3)/1000 = 0.17kW → 0.24A → below 6A min
+        result = allocate_power_to_vehicles(vehicles=[v2, v1], available_capacity_kw=5.0)
         car_1_alloc = next(r for r in result if r.vehicle_id == "car_1")
         car_2_alloc = next(r for r in result if r.vehicle_id == "car_2")
         assert car_1_alloc.amps > 0
@@ -122,17 +122,25 @@ class TestPowerAllocation:
 
     def test_allocate_disconnected_gets_nothing(self):
         v1 = _make_vehicle("car_1", priority=1, is_connected=False)
-        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0, voltage=230)
+        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0)
         assert result[0].amps == 0
 
     def test_allocate_at_target_soc_gets_nothing(self):
         v1 = _make_vehicle("car_1", priority=1, current_soc=90, target_soc=80)
-        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0, voltage=230)
+        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0)
         assert result[0].amps == 0
 
     def test_allocate_respects_min_amps(self):
         vehicles = [_make_vehicle("car_1", priority=1)]
-        result = allocate_power_to_vehicles(
-            vehicles=vehicles, available_capacity_kw=1.0, voltage=230
-        )
+        # 1kW three-phase: 1000 / (230*3) = 1.44A → below 6A min
+        result = allocate_power_to_vehicles(vehicles=vehicles, available_capacity_kw=1.0)
         assert result[0].amps == 0
+
+    def test_allocate_respects_fuse_size(self):
+        vehicles = [_make_vehicle("car_1", priority=1)]
+        # 20kW three-phase: 20000 / (230*3) = 28.98A → capped at fuse_size=16
+        result = allocate_power_to_vehicles(
+            vehicles=vehicles, available_capacity_kw=20.0, fuse_size=16
+        )
+        assert result[0].amps == 16
+        assert result[0].phases == 3

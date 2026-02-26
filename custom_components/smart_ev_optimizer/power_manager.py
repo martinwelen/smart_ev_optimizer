@@ -13,7 +13,8 @@ from datetime import UTC, datetime
 from .vehicle import VehicleState
 
 MIN_CHARGING_AMPS = 6
-MAX_SINGLE_PHASE_AMPS = 32
+NUM_PHASES = 3
+VOLTAGE = 230
 
 
 def _utcnow() -> datetime:
@@ -80,19 +81,22 @@ def allocate_power_to_vehicles(
     *,
     vehicles: list[VehicleState],
     available_capacity_kw: float,
-    voltage: int = 230,
+    fuse_size: int = 20,
 ) -> list[PowerAllocation]:
     """Allocate available power capacity across vehicles by priority.
 
+    Uses three-phase charging: I_per_phase = W / (230 * 3).
+    The fuse_size parameter is an absolute cap per phase.
+
     Vehicles are sorted by priority (lower number = higher priority).
     Each vehicle that needs charging gets allocated as many amps as
-    possible from the remaining capacity, subject to minimum and
-    maximum per-phase limits.
+    possible from the remaining capacity, subject to minimum amps
+    and the fuse size limit.
 
     Args:
         vehicles: List of vehicle states to consider.
         available_capacity_kw: Total available power in kilowatts.
-        voltage: Grid voltage (default 230V for Sweden).
+        fuse_size: Maximum amps per phase (fuse rating).
 
     Returns:
         A PowerAllocation for each vehicle, in the same order as sorted input.
@@ -103,18 +107,19 @@ def allocate_power_to_vehicles(
 
     for vehicle in sorted_vehicles:
         if not vehicle.needs_charge or not vehicle.is_connected:
-            allocations.append(PowerAllocation(vehicle.vehicle_id, amps=0, phases=1))
+            allocations.append(PowerAllocation(vehicle.vehicle_id, amps=0, phases=NUM_PHASES))
             continue
 
-        max_amps_from_capacity = int(remaining_kw * 1000 / voltage)
+        # Three-phase: I = W / (V * 3)
+        max_amps_from_capacity = int(remaining_kw * 1000 / (VOLTAGE * NUM_PHASES))
 
         if max_amps_from_capacity < MIN_CHARGING_AMPS:
-            allocations.append(PowerAllocation(vehicle.vehicle_id, amps=0, phases=1))
+            allocations.append(PowerAllocation(vehicle.vehicle_id, amps=0, phases=NUM_PHASES))
             continue
 
-        amps = min(max_amps_from_capacity, MAX_SINGLE_PHASE_AMPS)
-        allocated_kw = (amps * voltage) / 1000.0
+        amps = min(max_amps_from_capacity, fuse_size)
+        allocated_kw = (amps * VOLTAGE * NUM_PHASES) / 1000.0
         remaining_kw -= allocated_kw
-        allocations.append(PowerAllocation(vehicle.vehicle_id, amps=amps, phases=1))
+        allocations.append(PowerAllocation(vehicle.vehicle_id, amps=amps, phases=NUM_PHASES))
 
     return allocations

@@ -15,19 +15,20 @@
       },
       "economics": {
         "title": "Ekonomi",
-        "description": "Konfigurera natavgifter och ersattningsniver.",
+        "description": "Konfigurera natavgifter och ersattningsniver. Anvand decimaler for precision (t.ex. 0.82).",
         "data": {
-          "grid_fee_import": "Natavgift import (SEK/kWh)",
-          "grid_fee_export": "Natavgift export (SEK/kWh)",
-          "export_compensation": "Exportersattning (SEK/kWh)",
+          "grid_fee_import": "Natavgift import (SEK/kWh, t.ex. 0.82)",
+          "grid_fee_export": "Natavgift export (SEK/kWh, t.ex. 0.05)",
+          "export_compensation": "Exportersattning (SEK/kWh, t.ex. 0.10)",
           "vat_rate": "Momssats (0.25 = 25%)"
         }
       },
       "power": {
         "title": "Effektbegransningar",
-        "description": "Stall in maximal effektgrans for EV-laddning.",
+        "description": "Stall in maximal effektgrans och sakringsstorlek for EV-laddning.",
         "data": {
-          "power_limit_kw": "Maximal effektgrans (kW)"
+          "power_limit_kw": "Maximal effektgrans (kW)",
+          "fuse_size": "Sakringsstorlek per fas (A)"
         }
       },
       "vehicle": {
