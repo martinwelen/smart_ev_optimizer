@@ -1,4 +1,5 @@
 """Tests for switch platform."""
+
 from unittest.mock import AsyncMock, MagicMock
 
 from custom_components.smart_ev_optimizer.coordinator import SmartEVOptimizerData

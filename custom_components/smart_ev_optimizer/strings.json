@@ -50,8 +50,15 @@
   "options": {
     "step": {
       "init": {
+        "title": "Manage Vehicles",
+        "description": "Add, edit, or remove vehicles from the optimiser.",
+        "data": {
+          "action": "Choose an action"
+        }
+      },
+      "add_vehicle": {
         "title": "Add Vehicle",
-        "description": "Add another EV to the optimiser.",
+        "description": "Add a new EV to the optimiser.",
         "data": {
           "name": "Vehicle name",
           "priority": "Charging priority (1 = highest)",
@@ -59,6 +66,32 @@
           "soc_entity": "State of charge entity (optional)",
           "target_soc": "Target state of charge (%)",
           "departure_entity": "Departure time entity (optional)"
+        }
+      },
+      "edit_vehicle": {
+        "title": "Edit Vehicle",
+        "description": "Select a vehicle to edit.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "edit_vehicle_detail": {
+        "title": "Edit Vehicle Details",
+        "description": "Update the vehicle configuration.",
+        "data": {
+          "name": "Vehicle name",
+          "priority": "Charging priority (1 = highest)",
+          "charger_entity": "Charger status entity",
+          "soc_entity": "State of charge entity (optional)",
+          "target_soc": "Target state of charge (%)",
+          "departure_entity": "Departure time entity (optional)"
+        }
+      },
+      "remove_vehicle": {
+        "title": "Remove Vehicle",
+        "description": "Select a vehicle to remove.",
+        "data": {
+          "vehicle": "Vehicle"
         }
       }
     }

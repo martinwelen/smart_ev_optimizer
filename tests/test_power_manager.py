@@ -122,16 +122,12 @@ class TestPowerAllocation:
 
     def test_allocate_disconnected_gets_nothing(self):
         v1 = _make_vehicle("car_1", priority=1, is_connected=False)
-        result = allocate_power_to_vehicles(
-            vehicles=[v1], available_capacity_kw=11.0, voltage=230
-        )
+        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0, voltage=230)
         assert result[0].amps == 0
 
     def test_allocate_at_target_soc_gets_nothing(self):
         v1 = _make_vehicle("car_1", priority=1, current_soc=90, target_soc=80)
-        result = allocate_power_to_vehicles(
-            vehicles=[v1], available_capacity_kw=11.0, voltage=230
-        )
+        result = allocate_power_to_vehicles(vehicles=[v1], available_capacity_kw=11.0, voltage=230)
         assert result[0].amps == 0
 
     def test_allocate_respects_min_amps(self):

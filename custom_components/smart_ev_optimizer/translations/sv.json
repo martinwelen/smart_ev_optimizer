@@ -50,8 +50,15 @@
   "options": {
     "step": {
       "init": {
+        "title": "Hantera fordon",
+        "description": "Lagg till, redigera eller ta bort fordon fran optimeraren.",
+        "data": {
+          "action": "Valj en atgard"
+        }
+      },
+      "add_vehicle": {
         "title": "Lagg till fordon",
-        "description": "Lagg till ytterligare ett elfordon till optimeraren.",
+        "description": "Lagg till ett nytt elfordon till optimeraren.",
         "data": {
           "name": "Fordonsnamn",
           "priority": "Laddningsprioritet (1 = hogst)",
@@ -59,6 +66,32 @@
           "soc_entity": "Laddningsniva-entitet (valfri)",
           "target_soc": "Onskad laddningsniva (%)",
           "departure_entity": "Avgangstid-entitet (valfri)"
+        }
+      },
+      "edit_vehicle": {
+        "title": "Redigera fordon",
+        "description": "Valj ett fordon att redigera.",
+        "data": {
+          "vehicle": "Fordon"
+        }
+      },
+      "edit_vehicle_detail": {
+        "title": "Redigera fordonsdetaljer",
+        "description": "Uppdatera fordonskonfigurationen.",
+        "data": {
+          "name": "Fordonsnamn",
+          "priority": "Laddningsprioritet (1 = hogst)",
+          "charger_entity": "Laddarstatusentitet",
+          "soc_entity": "Laddningsniva-entitet (valfri)",
+          "target_soc": "Onskad laddningsniva (%)",
+          "departure_entity": "Avgangstid-entitet (valfri)"
+        }
+      },
+      "remove_vehicle": {
+        "title": "Ta bort fordon",
+        "description": "Valj ett fordon att ta bort.",
+        "data": {
+          "vehicle": "Fordon"
         }
       }
     }

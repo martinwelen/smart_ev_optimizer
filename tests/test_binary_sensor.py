@@ -1,4 +1,5 @@
 """Tests for binary_sensor platform."""
+
 from unittest.mock import MagicMock
 
 from custom_components.smart_ev_optimizer.binary_sensor import (
@@ -84,9 +85,7 @@ def test_vehicle_charging_not_found():
 
 
 def test_obc_cooldown_active():
-    data = SmartEVOptimizerData(
-        decision_reason="obc_cooldown_active"
-    )
+    data = SmartEVOptimizerData(decision_reason="obc_cooldown_active")
     coord = _make_coordinator_mock(data)
     sensor = SEOOBCCooldownActiveSensor(coord)
     assert sensor.is_on is True

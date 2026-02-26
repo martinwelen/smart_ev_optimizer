@@ -39,9 +39,7 @@ def evaluate_opportunity_cost(
             reason="no_night_prices_available",
         )
 
-    night_charge_cost = (cheapest_night_import_price + grid_fee_import) * (
-        1.0 + vat_rate
-    )
+    night_charge_cost = (cheapest_night_import_price + grid_fee_import) * (1.0 + vat_rate)
 
     if export_revenue > night_charge_cost:
         return OpportunityCostResult(

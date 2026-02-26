@@ -81,9 +81,7 @@ class ChargerActionHandler(ABC):
         ...
 
     @abstractmethod
-    async def verify_state(
-        self, expected: dict[str, Any], timeout_s: float = 5.0
-    ) -> bool:
+    async def verify_state(self, expected: dict[str, Any], timeout_s: float = 5.0) -> bool:
         """Verify the charger reached the expected state."""
         ...
 
@@ -99,18 +97,14 @@ class EaseeChargerHandler(ChargerActionHandler):
     Requires the Easee HACS integration (nordicopen/easee_hacs).
     """
 
-    def __init__(
-        self, hass: HomeAssistant, charger_id: str, circuit_id: str
-    ) -> None:
+    def __init__(self, hass: HomeAssistant, charger_id: str, circuit_id: str) -> None:
         self._hass = hass
         self._charger_id = charger_id
         self._circuit_id = circuit_id
 
     def get_current_status(self) -> str | None:
         """Read charger status from HA state machine."""
-        state = self._hass.states.get(
-            f"sensor.easee_{self._charger_id}_status"
-        )
+        state = self._hass.states.get(f"sensor.easee_{self._charger_id}_status")
         return state.state if state else None
 
     async def _ensure_ready(self) -> bool:
@@ -161,9 +155,7 @@ class EaseeChargerHandler(ChargerActionHandler):
             )
             return True
         except Exception:
-            _LOGGER.exception(
-                "Failed to set charging current on %s", self._circuit_id
-            )
+            _LOGGER.exception("Failed to set charging current on %s", self._circuit_id)
             return False
 
     async def set_phases(self, phases: int) -> bool:
@@ -188,9 +180,7 @@ class EaseeChargerHandler(ChargerActionHandler):
             )
             return True
         except Exception:
-            _LOGGER.exception(
-                "Failed to set phases on %s", self._charger_id
-            )
+            _LOGGER.exception("Failed to set phases on %s", self._charger_id)
             return False
 
     async def pause_charging(self) -> bool:
@@ -208,9 +198,7 @@ class EaseeChargerHandler(ChargerActionHandler):
             _LOGGER.info("Paused charging on %s", self._charger_id)
             return True
         except Exception:
-            _LOGGER.exception(
-                "Failed to pause charging on %s", self._charger_id
-            )
+            _LOGGER.exception("Failed to pause charging on %s", self._charger_id)
             return False
 
     async def resume_charging(self) -> bool:
@@ -228,30 +216,20 @@ class EaseeChargerHandler(ChargerActionHandler):
             _LOGGER.info("Resumed charging on %s", self._charger_id)
             return True
         except Exception:
-            _LOGGER.exception(
-                "Failed to resume charging on %s", self._charger_id
-            )
+            _LOGGER.exception("Failed to resume charging on %s", self._charger_id)
             return False
 
-    async def verify_state(
-        self, expected: dict[str, Any], timeout_s: float = 5.0
-    ) -> bool:
+    async def verify_state(self, expected: dict[str, Any], timeout_s: float = 5.0) -> bool:
         """Verify charger reached expected state with retry logic.
 
         After max retries, logs a warning about possible external conflict
         (e.g., Easee cloud schedule overriding local control).
         """
         for attempt in range(_VERIFY_MAX_RETRIES):
-            await asyncio.sleep(
-                timeout_s if attempt == 0 else _VERIFY_RETRY_DELAY_S
-            )
-            state = self._hass.states.get(
-                f"sensor.easee_{self._charger_id}_status"
-            )
+            await asyncio.sleep(timeout_s if attempt == 0 else _VERIFY_RETRY_DELAY_S)
+            state = self._hass.states.get(f"sensor.easee_{self._charger_id}_status")
             if state is None:
-                _LOGGER.warning(
-                    "Could not read state for charger %s", self._charger_id
-                )
+                _LOGGER.warning("Could not read state for charger %s", self._charger_id)
                 return False
 
             if EaseeChargerStatus.is_blocking(state.state):
@@ -266,9 +244,7 @@ class EaseeChargerHandler(ChargerActionHandler):
 
             all_match = True
             for key, value in expected.items():
-                actual = state.attributes.get(
-                    key, state.state if key == "status" else None
-                )
+                actual = state.attributes.get(key, state.state if key == "status" else None)
                 if actual != value:
                     all_match = False
                     break

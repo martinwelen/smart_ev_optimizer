@@ -235,7 +235,7 @@ Night charging cost includes VAT because this is the actual price you pay.
 
 MIT License
 
-Copyright (c) 2025 Martin Welen
+Copyright (c) 2026 Martin Welen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

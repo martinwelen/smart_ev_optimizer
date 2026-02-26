@@ -1,4 +1,5 @@
 """Tests for constants module."""
+
 from custom_components.smart_ev_optimizer.const import (
     CONF_BATTERY_POWER_SENSOR,
     CONF_BATTERY_SOC_SENSOR,

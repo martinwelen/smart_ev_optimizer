@@ -1,4 +1,5 @@
 """Select platform for Smart EV Optimizer."""
+
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity

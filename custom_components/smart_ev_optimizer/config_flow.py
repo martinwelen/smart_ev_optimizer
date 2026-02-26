@@ -14,6 +14,9 @@ from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
     NumberSelectorMode,
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
     TextSelector,
     TextSelectorConfig,
 )
@@ -64,7 +67,7 @@ STEP_SITE_SCHEMA = vol.Schema(
             EntitySelectorConfig(domain="sensor"),
         ),
         vol.Required(CONF_NORDPOOL_SENSOR): EntitySelector(
-            EntitySelectorConfig(domain="sensor"),
+            EntitySelectorConfig(domain="sensor", device_class="monetary"),
         ),
         vol.Optional(CONF_GRID_REWARDS_ENTITY): EntitySelector(
             EntitySelectorConfig(domain=["sensor", "binary_sensor"]),
@@ -114,9 +117,7 @@ STEP_ECONOMICS_SCHEMA = vol.Schema(
 
 STEP_POWER_SCHEMA = vol.Schema(
     {
-        vol.Optional(
-            CONF_POWER_LIMIT_KW, default=DEFAULT_POWER_LIMIT_KW
-        ): NumberSelector(
+        vol.Optional(CONF_POWER_LIMIT_KW, default=DEFAULT_POWER_LIMIT_KW): NumberSelector(
             NumberSelectorConfig(
                 min=1,
                 max=50,
@@ -147,9 +148,7 @@ STEP_VEHICLE_SCHEMA = vol.Schema(
         vol.Optional(CONF_VEHICLE_SOC_ENTITY): EntitySelector(
             EntitySelectorConfig(domain="sensor"),
         ),
-        vol.Optional(
-            CONF_VEHICLE_TARGET_SOC, default=DEFAULT_TARGET_SOC
-        ): NumberSelector(
+        vol.Optional(CONF_VEHICLE_TARGET_SOC, default=DEFAULT_TARGET_SOC): NumberSelector(
             NumberSelectorConfig(
                 min=10,
                 max=100,
@@ -204,9 +203,7 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
         self._power_data: dict[str, Any] = {}
 
     # Step 1: Site sensors
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle the site sensor mapping step."""
         if user_input is None:
             return self.async_show_form(
@@ -218,9 +215,7 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self.async_step_economics()
 
     # Step 2: Economics
-    async def async_step_economics(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_economics(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle the economics configuration step."""
         if user_input is None:
             return self.async_show_form(
@@ -232,9 +227,7 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self.async_step_power()
 
     # Step 3: Power limits
-    async def async_step_power(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_power(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle the power limit configuration step."""
         if user_input is None:
             return self.async_show_form(
@@ -246,9 +239,7 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self.async_step_vehicle()
 
     # Step 4: Vehicle setup (first vehicle required during initial config)
-    async def async_step_vehicle(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    async def async_step_vehicle(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Handle the vehicle setup step."""
         if user_input is None:
             return self.async_show_form(
@@ -282,25 +273,181 @@ class SmartEVOptimizerConfigFlow(ConfigFlow, domain=DOMAIN):
 class SmartEVOptimizerOptionsFlow(OptionsFlow):
     """Handle options flow — manage vehicles after initial setup."""
 
+    MENU_ADD = "add_vehicle"
+    MENU_EDIT = "edit_vehicle"
+    MENU_REMOVE = "remove_vehicle"
+
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialise with existing config entry."""
         super().__init__()
         self.config_entry = config_entry
+        self._selected_vehicle_name: str | None = None
 
-    async def async_step_init(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Show vehicle form for adding a new vehicle."""
+    # ----- Menu -----
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Show menu: add, edit, or remove vehicle."""
+        if user_input is not None:
+            action = user_input.get("action")
+            if action == self.MENU_ADD:
+                return await self.async_step_add_vehicle()
+            if action == self.MENU_EDIT:
+                return await self.async_step_edit_vehicle()
+            if action == self.MENU_REMOVE:
+                return await self.async_step_remove_vehicle()
+
+        menu_schema = vol.Schema(
+            {
+                vol.Required("action"): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[
+                            {"value": self.MENU_ADD, "label": "Add vehicle"},
+                            {"value": self.MENU_EDIT, "label": "Edit vehicle"},
+                            {"value": self.MENU_REMOVE, "label": "Remove vehicle"},
+                        ],
+                        mode=SelectSelectorMode.LIST,
+                    ),
+                ),
+            }
+        )
+        return self.async_show_form(step_id="init", data_schema=menu_schema)
+
+    # ----- Add -----
+
+    async def async_step_add_vehicle(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Add a new vehicle."""
         if user_input is None:
             return self.async_show_form(
-                step_id="init",
+                step_id="add_vehicle",
                 data_schema=STEP_VEHICLE_SCHEMA,
             )
 
-        # Append to existing vehicles list
         existing_data = dict(self.config_entry.data)
         vehicles = list(existing_data.get(CONF_VEHICLES, []))
         vehicles.append(user_input)
         existing_data[CONF_VEHICLES] = vehicles
-
         return self.async_create_entry(title="", data=existing_data)
+
+    # ----- Edit -----
+
+    async def async_step_edit_vehicle(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Select which vehicle to edit."""
+        vehicles = list(self.config_entry.data.get(CONF_VEHICLES, []))
+        names = [v.get(CONF_VEHICLE_NAME, f"Vehicle {i + 1}") for i, v in enumerate(vehicles)]
+
+        if not names:
+            return self.async_create_entry(title="", data=dict(self.config_entry.data))
+
+        if user_input is not None:
+            self._selected_vehicle_name = user_input.get("vehicle")
+            return await self.async_step_edit_vehicle_detail()
+
+        select_schema = vol.Schema(
+            {
+                vol.Required("vehicle"): SelectSelector(
+                    SelectSelectorConfig(
+                        options=names,
+                        mode=SelectSelectorMode.DROPDOWN,
+                    ),
+                ),
+            }
+        )
+        return self.async_show_form(step_id="edit_vehicle", data_schema=select_schema)
+
+    async def async_step_edit_vehicle_detail(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Show pre-filled form for the selected vehicle."""
+        existing_data = dict(self.config_entry.data)
+        vehicles = list(existing_data.get(CONF_VEHICLES, []))
+
+        idx = None
+        for i, v in enumerate(vehicles):
+            if v.get(CONF_VEHICLE_NAME) == self._selected_vehicle_name:
+                idx = i
+                break
+
+        if idx is None:
+            return self.async_create_entry(title="", data=existing_data)
+
+        if user_input is not None:
+            vehicles[idx] = user_input
+            existing_data[CONF_VEHICLES] = vehicles
+            return self.async_create_entry(title="", data=existing_data)
+
+        current = vehicles[idx]
+        prefilled_schema = vol.Schema(
+            {
+                vol.Required(
+                    CONF_VEHICLE_NAME,
+                    default=current.get(CONF_VEHICLE_NAME, ""),
+                ): TextSelector(TextSelectorConfig(type="text")),
+                vol.Required(
+                    CONF_VEHICLE_PRIORITY,
+                    default=current.get(CONF_VEHICLE_PRIORITY, 1),
+                ): NumberSelector(
+                    NumberSelectorConfig(min=1, max=10, step=1, mode=NumberSelectorMode.BOX),
+                ),
+                vol.Required(
+                    CONF_VEHICLE_CHARGER_ENTITY,
+                    default=current.get(CONF_VEHICLE_CHARGER_ENTITY, ""),
+                ): EntitySelector(EntitySelectorConfig(domain="sensor")),
+                vol.Optional(
+                    CONF_VEHICLE_SOC_ENTITY,
+                    default=current.get(CONF_VEHICLE_SOC_ENTITY, ""),
+                ): EntitySelector(EntitySelectorConfig(domain="sensor")),
+                vol.Optional(
+                    CONF_VEHICLE_TARGET_SOC,
+                    default=current.get(CONF_VEHICLE_TARGET_SOC, DEFAULT_TARGET_SOC),
+                ): NumberSelector(
+                    NumberSelectorConfig(
+                        min=10,
+                        max=100,
+                        step=5,
+                        unit_of_measurement="%",
+                        mode=NumberSelectorMode.SLIDER,
+                    ),
+                ),
+                vol.Optional(
+                    CONF_VEHICLE_DEPARTURE_ENTITY,
+                    default=current.get(CONF_VEHICLE_DEPARTURE_ENTITY, ""),
+                ): EntitySelector(
+                    EntitySelectorConfig(domain=["sensor", "input_datetime"]),
+                ),
+            }
+        )
+        return self.async_show_form(
+            step_id="edit_vehicle_detail",
+            data_schema=prefilled_schema,
+        )
+
+    # ----- Remove -----
+
+    async def async_step_remove_vehicle(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Select and remove a vehicle."""
+        existing_data = dict(self.config_entry.data)
+        vehicles = list(existing_data.get(CONF_VEHICLES, []))
+        names = [v.get(CONF_VEHICLE_NAME, f"Vehicle {i + 1}") for i, v in enumerate(vehicles)]
+
+        if not names:
+            return self.async_create_entry(title="", data=existing_data)
+
+        if user_input is not None:
+            remove_name = user_input.get("vehicle")
+            vehicles = [v for v in vehicles if v.get(CONF_VEHICLE_NAME) != remove_name]
+            existing_data[CONF_VEHICLES] = vehicles
+            return self.async_create_entry(title="", data=existing_data)
+
+        select_schema = vol.Schema(
+            {
+                vol.Required("vehicle"): SelectSelector(
+                    SelectSelectorConfig(
+                        options=names,
+                        mode=SelectSelectorMode.DROPDOWN,
+                    ),
+                ),
+            }
+        )
+        return self.async_show_form(step_id="remove_vehicle", data_schema=select_schema)
